@@ -1,0 +1,11 @@
+
+hidden = [".*"]
+
+[color]
+    [color.grey]
+    files = ["*.css", "*.lock"]
+
+[annotate]
+    [annotate.config]
+    files = ["*.toml", "*.yml", "*.json"]
+    annotate = "configuration files"
