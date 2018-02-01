@@ -1,36 +1,49 @@
 // les module
-use std::fs;
-use std::path::Path;
 use std::io::Write;
+use fs::DirReader;
 
-pub struct Les</*'args,*/ 'w, W: Write + 'w> {
+pub struct Les</*'args,*/ 'w, 'fs, W: Write + 'w, R: DirReader + 'fs> {
 
     pub writer: &'w mut W,
 
 //    pub args: Vec<&'args OsStr>
+
+    pub dir_reader: &'fs R
 }
 
 
-impl</*'args,*/ 'w, W: Write + 'w> Les</*'args,*/ 'w, W> {
+impl</*'args,*/ 'w, 'fs, W: Write + 'w, R: DirReader + 'fs> Les</*'args,*/ 'w, 'fs,  W, R> {
 
-    pub fn new(writer: &'w mut W) -> Les<'w, W> {
+    pub fn new(writer: &'w mut W, dir_reader: &'fs R) -> Les<'w, 'fs, W, R> {
 
-        Les { writer }
+        Les { writer, dir_reader }
     }
 
     pub fn run(&mut self){
-        let paths = fs::read_dir("./").unwrap();
+        let paths = self.dir_reader.read_dir("./");
 
         for path in paths {
-            let dir_entry = path.unwrap();
-            let meta = dir_entry.metadata().unwrap();
-            let slash = if meta.is_dir() { "/" } else { "" };
-            let dir_path = dir_entry.path();
-            let stem_option = dir_path.file_name();
-            let stem = stem_option.unwrap();
-            let p = Path::new(stem);
-            let _ = writeln!(self.writer, "{}{}", p.to_str().unwrap(), slash);
+            let _ = writeln!(self.writer, "{}", path.to_str());
         }
 
     }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use les::*;
+    use std;
+    use fs;
+
+    #[test]
+    fn it_doesnt_error() {
+
+        let fs_reader = fs::FsReader;
+        let mut writer = std::io::stdout();
+
+        let mut l = Les::new(&mut writer, &fs_reader);
+        l.run();
+    }
+
 }
