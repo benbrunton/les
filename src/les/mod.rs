@@ -40,10 +40,18 @@ mod tests {
     fn it_doesnt_error() {
 
         let fs_reader = fs::FsReader;
-        let mut writer = std::io::stdout();
+        let mut writer = Writer;
 
         let mut l = Les::new(&mut writer, &fs_reader);
         l.run();
+    }
+
+
+    struct Writer;
+
+    impl std::io::Write for Writer {
+        fn write(&mut self, _: &[u8]) -> Result<usize, std::io::Error>{ Ok(0) }
+        fn flush(&mut self) -> Result<(), std::io::Error>{ Ok(()) }
     }
 
 }
