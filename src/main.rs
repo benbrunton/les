@@ -1,11 +1,13 @@
 
 extern crate clap; 
+extern crate ansi_term;
 
 use std::io::stdout;
 use clap::{App, Arg};
 
 mod les;
 mod fs;
+mod style;
 
 fn main() {
 

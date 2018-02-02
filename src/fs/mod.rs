@@ -62,6 +62,7 @@ impl DirReader for FsReader {
 
 }
 
+#[derive(Clone)]
 pub enum DirType {
     File,
     Dir
@@ -73,6 +74,21 @@ pub struct File {
 }
 
 impl File {
+    pub fn new(label: String, dir_type: DirType) -> File {
+        File {
+            label,
+            dir_type
+        }
+    }
+
+    pub fn get_dir_type(&self) -> DirType {
+        self.dir_type.clone()
+    }
+
+    pub fn get_label(&self) -> String {
+        self.label.clone()
+    }
+
     pub fn to_str(&self) -> String {
         self.label.clone()
     }
