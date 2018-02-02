@@ -1,8 +1,10 @@
-
 use std::io::stdout;
+
+extern crate ansi_term;
 
 mod les;
 mod fs;
+mod style;
 
 fn main() {
 

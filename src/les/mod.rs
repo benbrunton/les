@@ -1,6 +1,7 @@
 // les module
 use std::io::Write;
 use fs::DirReader;
+use style::paint;
 
 pub struct Les</*'args,*/ 'w, 'fs, W: Write + 'w, R: DirReader + 'fs> {
 
@@ -23,7 +24,7 @@ impl</*'args,*/ 'w, 'fs, W: Write + 'w, R: DirReader + 'fs> Les</*'args,*/ 'w, '
         let paths = self.dir_reader.read_dir("./");
 
         for path in paths {
-            let _ = writeln!(self.writer, "{}", path.to_str());
+            let _ = writeln!(self.writer, "{}", paint(path));
         }
 
     }

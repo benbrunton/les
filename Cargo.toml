@@ -4,3 +4,4 @@ version = "0.1.0"
 authors = ["Ben Brunton <ben.brunton@infinityworks.com>"]
 
 [dependencies]
+ansi_term = "0.10.2"
