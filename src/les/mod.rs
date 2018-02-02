@@ -4,13 +4,8 @@ use fs::DirReader;
 use style::paint;
 
 pub struct Les<'path, 'w, 'fs, W: Write + 'w, R: DirReader + 'fs> {
-
     pub writer: &'w mut W,
-
-//    pub args: Vec<&'args OsStr>
-
     pub dir_reader: &'fs R,
-
     path: &'path str
 }
 
