@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 mod config;
 
-pub fn find_config(target_path: &str) -> config::Config {
+pub fn find_config(target_path: &str) -> Option<config::Config> {
 
     let absolute_path = PathBuf::from(target_path).canonicalize();
     let mut path = absolute_path.expect("expected to be able to derive absolute path from arg");
@@ -12,9 +12,13 @@ pub fn find_config(target_path: &str) -> config::Config {
         path = (*path.parent().unwrap()).to_path_buf();
     }
 
+    if !check_exists(&path) {
+        return None;
+    }
+
     path.push(".les");
 
-    config::Config::new(path.to_str().expect("unable to set path to string"))
+    Some(config::Config::new(path.to_str().expect("unable to set path to string")))
 
 }
 
