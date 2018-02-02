@@ -1,6 +1,7 @@
 
 extern crate clap; 
 extern crate ansi_term;
+extern crate toml;
 
 use std::io::stdout;
 use clap::{App, Arg};
@@ -8,6 +9,7 @@ use clap::{App, Arg};
 mod les;
 mod fs;
 mod style;
+mod config;
 
 fn main() {
 
@@ -24,6 +26,8 @@ fn main() {
 
     let dir_option = matches.value_of("file");
     let dir = dir_option.unwrap_or("./");
+
+    config::find_config(dir);
 
     let mut std_out_writer = stdout();
     let fs_reader = fs::FsReader;
