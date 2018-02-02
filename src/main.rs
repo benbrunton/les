@@ -12,15 +12,15 @@ fn main() {
     let matches = App::new("les")
         .version("v0.1-beta")
         .arg(
-            Arg::with_name("DIR")
-                .help("The dir to list")
+            Arg::with_name("file")
+                .help("file or dir to list")
                 .required(false)
                 .index(1)
             )
         .get_matches();
 
 
-    let dir_option = matches.value_of("DIR");
+    let dir_option = matches.value_of("file");
     let dir = dir_option.unwrap_or("./");
 
     let mut std_out_writer = stdout();

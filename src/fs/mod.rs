@@ -1,44 +1,65 @@
 
 use std::fs;
+use std::path::Path;
 
 pub trait DirReader {
 
-    fn read_dir(&self, path: &str) -> Vec<File>;
+    fn read_dir(&self, path: &str) -> Result<Vec<File>, ReadError>;
 }
 
 
 pub struct FsReader;
 
-impl DirReader for FsReader {
+impl FsReader{
 
-    fn read_dir(&self, path: &str) -> Vec<File> {
-       let paths = fs::read_dir(path).unwrap();
-       let mut vec = vec!();
+    pub fn get_line(path: &Path) -> File {
+        let meta = path.metadata().unwrap();
+        let slash = if meta.is_dir() { "/" } else { "" };
+        let stem_option = path.file_name();
+        let stem = stem_option.unwrap();
+        let label = format!("{}{}", stem.to_str().unwrap(), slash);
+        let dir_type = if meta.is_dir() {
+            DirType::Dir
+        } else {
+            DirType::File
+        };
 
-        for path in paths {
-            let dir_entry = path.unwrap();
-            let meta = dir_entry.metadata().unwrap();
-            let slash = if meta.is_dir() { "/" } else { "" };
-            let dir_path = dir_entry.path();
-            let stem_option = dir_path.file_name();
-            let stem = stem_option.unwrap();
-            let label = format!("{}{}", stem.to_str().unwrap(), slash);
-            let dir_type = if meta.is_dir() {
-                DirType::Dir
-            } else {
-                DirType::File
-            };
-
-            let f = File{
-                label, dir_type
-            };
-
-            vec.push(f)
+        File{
+            label, dir_type
         }
 
-        vec
+    }
+
+}
+
+impl DirReader for FsReader {
+
+    fn read_dir(&self, path: &str) -> Result<Vec<File>, ReadError> {
+        let mut vec = vec!();
+
+        let meta = fs::metadata(path); 
+
+        match meta {
+            Ok(ref m) if !m.is_dir() => {
+                vec.push(FsReader::get_line(Path::new(path)));
+                return Ok(vec);
+            },
+            Err(_) => return Err(ReadError::InvalidPath),
+            _ => ()
+        }
+
+        let paths = fs::read_dir(path).unwrap();
+
+        for p in paths {
+            let dir_entry = p.unwrap();
+            let file = FsReader::get_line(&dir_entry.path()); 
+            vec.push(file)
+        }
+
+        Ok(vec)
 
     }
+
 }
 
 pub enum DirType {
@@ -55,4 +76,8 @@ impl File {
     pub fn to_str(&self) -> String {
         self.label.clone()
     }
+}
+
+pub enum ReadError{
+    InvalidPath
 }

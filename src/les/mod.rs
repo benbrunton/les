@@ -22,10 +22,16 @@ impl<'path, 'w, 'fs, W: Write + 'w, R: DirReader + 'fs> Les<'path, 'w, 'fs,  W, 
     }
 
     pub fn run(&mut self){
-        let paths = self.dir_reader.read_dir(self.path);
+        let paths_result = self.dir_reader.read_dir(self.path);
 
-        for path in paths {
-            let _ = writeln!(self.writer, "{}", path.to_str());
+        match paths_result {
+            Ok(paths) => {
+
+                for path in paths {
+                    let _ = writeln!(self.writer, "{}", path.to_str());
+                }
+            },
+            _ => ()
         }
 
     }
