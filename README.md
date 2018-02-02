@@ -4,13 +4,10 @@ A project configurable `ls`
 
 [![Build Status](https://travis-ci.org/benbrunton/les.svg?branch=master)](https://travis-ci.org/benbrunton/les)
 
-sensible defaults ( ls -lah by default )
-configurable with .les
-- glob level config
-  - colour
-  - hidden
-  - annotate
-- consider TOML syntax
+## Project Aims
+Les is a configurable `ls` replacement with a rich feature-set and sensible
+defaults. Les can be configured at the system and project level and allows a
+user to colour or add icons to different files based on glob patterns.
 
 ## Why?
 `ls` is a great multi-purpose tool but does little to address varied  contexts 
