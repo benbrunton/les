@@ -2,6 +2,8 @@
 
 A project configurable `ls`
 
+[![Build Status](https://travis-ci.org/benbrunton/les.svg?branch=master)](https://travis-ci.org/benbrunton/les)
+
 sensible defaults ( ls -lah by default )
 configurable with .les
 - glob level config
