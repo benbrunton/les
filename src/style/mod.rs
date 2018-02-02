@@ -8,7 +8,7 @@ const ICON_UNKNOWN: char = '*';
 
 pub fn paint(path: File) -> String {
     let icon = get_icon(path.get_dir_type());
-    let label = get_decorated_text(path.get_dir_type(), path.to_str());
+    let label = get_decorated_text(path.get_dir_type(), path.get_label());
 
     return format!(
         "{} {}",

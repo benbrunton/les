@@ -24,9 +24,9 @@ impl FsReader{
             DirType::File
         };
 
-        File{
+        File::new(
             label, dir_type
-        }
+        )
 
     }
 
@@ -89,9 +89,6 @@ impl File {
         self.label.clone()
     }
 
-    pub fn to_str(&self) -> String {
-        self.label.clone()
-    }
 }
 
 pub enum ReadError{
