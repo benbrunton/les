@@ -3,28 +3,36 @@ use std::io::Write;
 use fs::DirReader;
 use style::paint;
 
-pub struct Les</*'args,*/ 'w, 'fs, W: Write + 'w, R: DirReader + 'fs> {
+pub struct Les<'path, 'w, 'fs, W: Write + 'w, R: DirReader + 'fs> {
 
     pub writer: &'w mut W,
 
 //    pub args: Vec<&'args OsStr>
 
-    pub dir_reader: &'fs R
+    pub dir_reader: &'fs R,
+
+    path: &'path str
 }
 
 
-impl</*'args,*/ 'w, 'fs, W: Write + 'w, R: DirReader + 'fs> Les</*'args,*/ 'w, 'fs,  W, R> {
+impl<'path, 'w, 'fs, W: Write + 'w, R: DirReader + 'fs> Les<'path, 'w, 'fs,  W, R> {
 
-    pub fn new(writer: &'w mut W, dir_reader: &'fs R) -> Les<'w, 'fs, W, R> {
+    pub fn new(path: &'path str, writer: &'w mut W, dir_reader: &'fs R) -> Les<'path, 'w, 'fs, W, R> {
 
-        Les { writer, dir_reader }
+        Les { writer, dir_reader, path }
     }
 
     pub fn run(&mut self){
-        let paths = self.dir_reader.read_dir("./");
+        let paths_result = self.dir_reader.read_dir(self.path);
 
-        for path in paths {
-            let _ = writeln!(self.writer, "{}", paint(path));
+        match paths_result {
+            Ok(paths) => {
+
+                for path in paths {
+                    let _ = writeln!(self.writer, "{}", paint(path));
+                }
+            },
+            _ => ()
         }
 
     }
@@ -43,7 +51,7 @@ mod tests {
         let fs_reader = fs::FsReader;
         let mut writer = Writer;
 
-        let mut l = Les::new(&mut writer, &fs_reader);
+        let mut l = Les::new("./", &mut writer, &fs_reader);
         l.run();
     }
 

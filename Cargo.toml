@@ -5,3 +5,4 @@ authors = ["Ben Brunton <ben.brunton@infinityworks.com>"]
 
 [dependencies]
 ansi_term = "0.10.2"
+clap = "2.29.2"
