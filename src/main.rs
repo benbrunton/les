@@ -11,14 +11,14 @@ mod fs;
 mod style;
 mod config;
 
+const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 const DEFAULT_PATH: &str = "./";
-
 const ARGS_FILEPATH: &str = "file";
 
 fn main() {
 
     let matches = App::new("les")
-        .version("v0.1-beta")
+        .version(VERSION)
         .arg(
             Arg::with_name(ARGS_FILEPATH)
                 .help("file or dir to list")
@@ -30,7 +30,7 @@ fn main() {
     let dir_option = matches.value_of(ARGS_FILEPATH);
     let dir = dir_option.unwrap_or(DEFAULT_PATH);
 
-    config::find_config(dir);
+    let configuration = config::find_config(dir);
 
     let mut std_out_writer = stdout();
     let fs_reader = fs::FsReader;

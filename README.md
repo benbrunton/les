@@ -14,6 +14,5 @@ user to colour or add icons to different files based on glob patterns.
 and hierachies in different projects. Adding visual information to a file list 
 gives us additional structure through which to view a project.
 
-Allowing a user to configure `les` on a per-directory basis acknowledges the 
-fact that emphasis of particular files is dependant on the environment in which
-you are working.
+Allowing users to configure `les` on a per-directory basis means emphasis can
+change based on tech stack or project requirements.

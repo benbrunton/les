@@ -7,6 +7,7 @@ use std::env;
 
 use toml;
 
+#[derive(Debug)]
 pub struct Config{
     store: BTreeMap<String, toml::Value>
 }

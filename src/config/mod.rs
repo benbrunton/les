@@ -6,6 +6,11 @@ mod config;
 pub fn find_config(target_path: &str) -> Option<config::Config> {
 
     let absolute_path = PathBuf::from(target_path).canonicalize();
+    match absolute_path {
+        Err(_)  => return None,
+        _       => ()
+    }
+
     let mut path = absolute_path.expect("expected to be able to derive absolute path from arg");
 
     while !check_exists(&path) && path.parent() != None {
@@ -17,8 +22,8 @@ pub fn find_config(target_path: &str) -> Option<config::Config> {
     }
 
     path.push(".les");
-
-    Some(config::Config::new(path.to_str().expect("unable to set path to string")))
+    let c = config::Config::new(path.to_str().expect("unable to set path to string"));
+    Some(c)
 
 }
 
