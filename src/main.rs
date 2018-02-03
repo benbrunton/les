@@ -34,6 +34,6 @@ fn main() {
 
     let mut std_out_writer = stdout();
     let fs_reader = fs::FsReader;
-    let mut l = les::Les::new(dir, &mut std_out_writer, &fs_reader);
+    let mut l = les::Les::new(dir, &mut std_out_writer, &fs_reader, &style::Painter);
     l.run();
 }

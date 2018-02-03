@@ -6,6 +6,17 @@ const ICON_DIRECTORY: char = '\u{1F4C2}';
 const ICON_FILE: char = '\u{1F5CB}';
 const ICON_UNKNOWN: char = '*';
 
+pub struct Painter;
+
+impl Painter {
+
+    pub fn paint(&self, path: File) -> String {
+        paint(path)
+    }
+}
+
+
+
 pub fn paint(path: File) -> String {
     let icon = get_icon(path.get_dir_type());
     let label = get_decorated_text(path.get_dir_type(), path.get_label());

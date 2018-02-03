@@ -1,20 +1,26 @@
 // les module
 use std::io::Write;
 use fs::DirReader;
-use style::paint;
+use style::Painter;
 
-pub struct Les<'path, 'w, 'fs, W: Write + 'w, R: DirReader + 'fs> {
+pub struct Les<'path, 'w, 'fs, 'paint, W: Write + 'w, R: DirReader + 'fs> {
     pub writer: &'w mut W,
     pub dir_reader: &'fs R,
-    path: &'path str
+    path: &'path str,
+    painter: &'paint Painter
 }
 
 
-impl<'path, 'w, 'fs, W: Write + 'w, R: DirReader + 'fs> Les<'path, 'w, 'fs,  W, R> {
+impl<'path, 'w, 'fs, 'paint, W: Write + 'w, R: DirReader + 'fs> Les<'path, 'w, 'fs,  'paint, W, R> {
 
-    pub fn new(path: &'path str, writer: &'w mut W, dir_reader: &'fs R) -> Les<'path, 'w, 'fs, W, R> {
+    pub fn new(
+        path: &'path str, 
+        writer: &'w mut W, 
+        dir_reader: &'fs R, 
+        painter: &'paint Painter
+    ) -> Les<'path, 'w, 'fs, 'paint, W, R> {
 
-        Les { writer, dir_reader, path }
+        Les { writer, dir_reader, path, painter }
     }
 
     pub fn run(&mut self){
@@ -24,7 +30,7 @@ impl<'path, 'w, 'fs, W: Write + 'w, R: DirReader + 'fs> Les<'path, 'w, 'fs,  W, 
             Ok(paths) => {
 
                 for path in paths {
-                    let _ = writeln!(self.writer, "{}", paint(path));
+                    let _ = writeln!(self.writer, "{}", self.painter.paint(path));
                 }
             },
             _ => ()
@@ -39,6 +45,7 @@ mod tests {
     use les::*;
     use std;
     use fs;
+    use style::Painter;
 
     #[test]
     fn it_doesnt_error() {
@@ -46,7 +53,7 @@ mod tests {
         let fs_reader = fs::FsReader;
         let mut writer = Writer;
 
-        let mut l = Les::new("./", &mut writer, &fs_reader);
+        let mut l = Les::new("./", &mut writer, &fs_reader, &Painter);
         l.run();
     }
 
