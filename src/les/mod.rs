@@ -52,8 +52,9 @@ mod tests {
 
         let fs_reader = fs::FsReader;
         let mut writer = Writer;
+        let painter = Painter::new(None);
 
-        let mut l = Les::new("./", &mut writer, &fs_reader, &Painter);
+        let mut l = Les::new("./", &mut writer, &fs_reader, &painter);
         l.run();
     }
 
