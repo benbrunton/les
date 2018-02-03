@@ -11,21 +11,24 @@ mod fs;
 mod style;
 mod config;
 
+const DEFAULT_PATH: &str = "./";
+
+const ARGS_FILEPATH: &str = "file";
+
 fn main() {
 
     let matches = App::new("les")
         .version("v0.1-beta")
         .arg(
-            Arg::with_name("file")
+            Arg::with_name(ARGS_FILEPATH)
                 .help("file or dir to list")
-                .required(false)
                 .index(1)
             )
         .get_matches();
 
 
-    let dir_option = matches.value_of("file");
-    let dir = dir_option.unwrap_or("./");
+    let dir_option = matches.value_of(ARGS_FILEPATH);
+    let dir = dir_option.unwrap_or(DEFAULT_PATH);
 
     config::find_config(dir);
 

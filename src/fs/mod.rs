@@ -12,8 +12,16 @@ pub struct FsReader;
 
 impl FsReader{
 
-    pub fn get_line(path: &Path) -> File {
-        let meta = path.metadata().unwrap();
+    pub fn get_line(path: &Path) -> Option<File> {
+        let meta_result = path.metadata();
+        match meta_result {
+            Ok(meta) => Some(FsReader::get_file(path, meta)),
+            _ => None
+        }
+
+    }
+
+    pub fn get_file(path: &Path, meta: fs::Metadata) -> File {
         let slash = if meta.is_dir() { "/" } else { "" };
         let stem_option = path.file_name();
         let stem = stem_option.unwrap();
@@ -41,8 +49,16 @@ impl DirReader for FsReader {
 
         match meta {
             Ok(ref m) if !m.is_dir() => {
-                vec.push(FsReader::get_line(Path::new(path)));
-                return Ok(vec);
+                let file_result = FsReader::get_line(Path::new(path));
+                match file_result {
+                    Some(file) => {
+                        vec.push(file);
+                        return Ok(vec);
+
+                    },
+                    _ => return Err(ReadError::InvalidPath)
+                }
+
             },
             Err(_) => return Err(ReadError::InvalidPath),
             _ => ()
@@ -52,8 +68,14 @@ impl DirReader for FsReader {
 
         for p in paths {
             let dir_entry = p.unwrap();
-            let file = FsReader::get_line(&dir_entry.path()); 
-            vec.push(file)
+            let file_result = FsReader::get_line(&dir_entry.path()); 
+            match file_result {
+                Some(file) => {
+                    vec.push(file);
+
+                },
+                _ => ()
+            }
         }
 
         Ok(vec)
