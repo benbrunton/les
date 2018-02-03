@@ -2,13 +2,21 @@ use ansi_term::{Colour, Style};
 use fs::File;
 use fs::DirType;
 
+use config::Config;
+
 const ICON_DIRECTORY: char = '\u{1F4C2}';
 const ICON_FILE: char = '\u{1F5CB}';
 const ICON_UNKNOWN: char = '*';
 
-pub struct Painter;
+pub struct Painter{
+    config: Option<Config>
+}
 
 impl Painter {
+
+    pub fn new(config: Option<Config>) -> Painter {
+        Painter { config }
+    }
 
     pub fn paint(&self, path: File) -> String {
         paint(path)

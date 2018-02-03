@@ -2,6 +2,7 @@
 use std::path::PathBuf;
 
 mod config;
+pub use self::config::Config;
 
 pub fn find_config(target_path: &str) -> Option<config::Config> {
 
