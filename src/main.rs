@@ -2,6 +2,7 @@
 extern crate clap; 
 extern crate ansi_term;
 extern crate toml;
+extern crate glob;
 
 use std::io::stdout;
 use clap::{App, Arg};

@@ -28,16 +28,19 @@ impl Config {
 
     }
 
-    pub fn get(&self, key: &'static str) -> Option<String> {
+    pub fn get(&self, key: &'static str) -> Option<&toml::Value> {
 
+        self.store.get(key)
+/*
         match self.store.get(key){
             Some(val) => {
                 let new_str = val.to_string();
                 let trimmed_str = new_str.trim_matches('"').to_string();
-                Some(trimmed_str)
+                Some(val)
             },
             None => None
         }
+*/
 
     }
 }

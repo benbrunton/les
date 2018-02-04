@@ -7,3 +7,4 @@ authors = ["Ben Brunton <ben.brunton@infinityworks.com>"]
 ansi_term = "0.10.2"
 clap = "2.29.2"
 toml = "0.4"
+glob = "0.2.11"

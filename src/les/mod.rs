@@ -30,7 +30,10 @@ impl<'a, W: Write + 'a, R: DirReader + 'a> Les<'a, W, R> {
             Ok(paths) => {
 
                 for path in paths {
-                    let _ = writeln!(self.writer, "{}", self.painter.paint(path));
+                    let output = self.painter.paint(path);
+                    if let Some(painted_path) = output {
+                        let _ = writeln!(self.writer, "{}", painted_path);
+                    }
                 }
             },
             _ => ()

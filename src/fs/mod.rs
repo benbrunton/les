@@ -22,10 +22,9 @@ impl FsReader{
     }
 
     pub fn get_file(path: &Path, meta: fs::Metadata) -> File {
-        let slash = if meta.is_dir() { "/" } else { "" };
         let stem_option = path.file_name();
         let stem = stem_option.unwrap();
-        let label = format!("{}{}", stem.to_str().unwrap(), slash);
+        let label = format!("{}", stem.to_str().unwrap());
         let dir_type = if meta.is_dir() {
             DirType::Dir
         } else {
@@ -33,7 +32,7 @@ impl FsReader{
         };
 
         File::new(
-            label, dir_type
+            label, dir_type, String::from(path.to_str().unwrap())
         )
 
     }
@@ -92,14 +91,16 @@ pub enum DirType {
 
 pub struct File {
     label: String,
-    dir_type: DirType
+    dir_type: DirType,
+    path: String
 }
 
 impl File {
-    pub fn new(label: String, dir_type: DirType) -> File {
+    pub fn new(label: String, dir_type: DirType, path: String) -> File {
         File {
             label,
-            dir_type
+            dir_type,
+            path
         }
     }
 
@@ -109,6 +110,10 @@ impl File {
 
     pub fn get_label(&self) -> String {
         self.label.clone()
+    }
+
+    pub fn get_path(&self) -> String {
+        self.path.clone()
     }
 
 }
