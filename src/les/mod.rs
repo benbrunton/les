@@ -3,22 +3,22 @@ use std::io::Write;
 use fs::DirReader;
 use style::Painter;
 
-pub struct Les<'path, 'w, 'fs, 'paint, W: Write + 'w, R: DirReader + 'fs> {
-    pub writer: &'w mut W,
-    pub dir_reader: &'fs R,
-    path: &'path str,
-    painter: &'paint Painter
+pub struct Les<'a, W: Write + 'a, R: DirReader + 'a> {
+    pub writer: &'a mut W,
+    pub dir_reader: &'a R,
+    path: &'a str,
+    painter: &'a Painter
 }
 
 
-impl<'path, 'w, 'fs, 'paint, W: Write + 'w, R: DirReader + 'fs> Les<'path, 'w, 'fs,  'paint, W, R> {
+impl<'a, W: Write + 'a, R: DirReader + 'a> Les<'a, W, R> {
 
     pub fn new(
-        path: &'path str, 
-        writer: &'w mut W, 
-        dir_reader: &'fs R, 
-        painter: &'paint Painter
-    ) -> Les<'path, 'w, 'fs, 'paint, W, R> {
+        path: &'a str, 
+        writer: &'a mut W, 
+        dir_reader: &'a R, 
+        painter: &'a Painter
+    ) -> Les<'a, W, R> {
 
         Les { writer, dir_reader, path, painter }
     }
