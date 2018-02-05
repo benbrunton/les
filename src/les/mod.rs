@@ -33,7 +33,9 @@ impl<'a, W: Write + 'a, R: DirReader + 'a> Les<'a, W, R> {
                 for path in paths {
 
                     let paint_rules = self.decorator.get_paint_rules(&path);
-                    println!("{}", paint(&paint_rules));
+                    if !paint_rules.is_hidden {
+                        println!("{}", paint(&paint_rules));
+                    }
                 }
             },
             _ => ()

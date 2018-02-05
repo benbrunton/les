@@ -24,10 +24,16 @@ impl FsReader{
     pub fn get_file(path: &Path, meta: fs::Metadata) -> File {
         let stem_option = path.file_name();
         let stem = stem_option.unwrap();
+        let name = format!("{}", stem.to_str().unwrap());
         let label = format!("{}", stem.to_str().unwrap());
 
+        let path_buf = path.to_path_buf();
+        let canonical_path = fs::canonicalize(&path_buf).unwrap_or(path_buf);
+        let buf = canonical_path.to_str();
+        let path_str = buf.unwrap_or(path.to_str().unwrap());
+
         File::new(
-            label, meta.is_dir(), String::from(path.to_str().unwrap())
+            name, label, meta.is_dir(), String::from(path_str)
         )
 
     }
@@ -80,18 +86,24 @@ impl DirReader for FsReader {
 
 
 pub struct File {
+    name: String,
     label: String,
     is_dir: bool,
     path: String
 }
 
 impl File {
-    pub fn new(label: String, is_dir: bool, path: String) -> File {
+    pub fn new(name: String, label: String, is_dir: bool, path: String) -> File {
         File {
+            name,
             label,
             is_dir,
             path
         }
+    }
+
+    pub fn get_name(&self) -> String {
+        self.name.clone()
     }
 
     pub fn get_is_dir(&self) -> bool {

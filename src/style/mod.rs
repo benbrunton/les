@@ -1,7 +1,9 @@
+
 use ansi_term::{Colour, Style};
 
 const ICON_UNKNOWN: char = '\u{1F5CB}';
 
+#[derive(Debug)]
 pub struct PaintItem{
     pub label: String,
     pub is_bold: bool,

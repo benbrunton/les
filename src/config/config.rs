@@ -19,7 +19,7 @@ impl Config {
 
     pub fn new(path: &str) -> Config{
 
-        let mut f = File::open(path);
+        let f = File::open(path);
 
         if let Err(_) = f {
             return Config { store: BTreeMap::new() }; 

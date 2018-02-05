@@ -1,5 +1,5 @@
 
-hidden = [".*"]
+hidden = ["*.lock"]
 
 [color]
     [color.grey]
