@@ -1,77 +1,55 @@
 use ansi_term::{Colour, Style};
-use fs::File;
-use fs::DirType;
 
-use config::Config;
-use toml;
-use glob::glob;
+const ICON_UNKNOWN: char = '\u{1F5CB}';
 
-const ICON_DIRECTORY: char = '\u{1F4C2}';
-const ICON_FILE: char = '\u{1F5CB}';
-const ICON_UNKNOWN: char = '*';
-
-pub struct Painter{
-    config: Option<Config>
+pub struct PaintItem{
+    pub label: String,
+    pub is_bold: bool,
+    pub is_underline: bool,
+    pub is_dimmed: bool,
+    pub is_hidden: bool,
+    pub colour: Option<Colour>,
+    pub icon: Option<char>
 }
 
-impl Painter {
+pub fn paint(item: &PaintItem) -> String {
 
-    pub fn new(config: Option<Config>) -> Painter {
-        Painter { config }
-    }
+    let label = get_decorated_text(item);
+    let icon = item.icon.unwrap_or(ICON_UNKNOWN).to_string();
 
-    pub fn paint(&self, path: File) -> Option<String> {
-
-        let hidden_files = match self.config {
-            Some(ref config) => {
-                match config.get("hidden") {
-                    Some(&toml::Value::Array(ref v)) => v.to_vec(),
-                    _        => vec!()
-                } 
-            },
-            None => vec!()
-        };
-
-
-        for item in hidden_files {
-            // todo - shouldn't panic here
-            for entry in glob(item.as_str().unwrap()).expect("Failed to read glob pattern") { 
-                if let Ok(hidden_path) = entry {
-                    if path.get_label() == hidden_path.to_str().unwrap() {
-                        return None;
-                    }
-                }
-            }
-        }
-
-        let icon = get_icon(path.get_dir_type());
-        let label = get_decorated_text(path.get_dir_type(), path.get_label());
-
-
-        return Some(format!(
-            "{} {}",
-            Style::new().bold().paint(icon.to_string()),
-            label
-        ));
-
-    }
+    return format!(
+        "{} {}",
+        Style::new().bold().paint(icon),
+        label
+    );
 }
 
 
-fn get_icon(inode_type: DirType) -> char {
-    match inode_type {
-        DirType::Dir  => ICON_DIRECTORY,
-        DirType::File => ICON_FILE,
-        _             => ICON_UNKNOWN,
-    }
-}
+fn get_decorated_text(item: &PaintItem) -> String {
 
-fn get_decorated_text(inode_type: DirType, label: String) -> String {
+    let mut style = Style::new();
 
-    match inode_type {
-        DirType::Dir => format!("{}", Style::new().fg(Colour::White).paint(label)),
-        _            => label
+    if item.is_bold {
+        style = style.bold();
     }
+
+    if item.is_underline {
+        style = style.underline();
+    }
+
+    if item.is_dimmed {
+        style = style.dimmed();
+    }
+
+    if item.is_hidden {
+        style = style.hidden();
+    }
+
+    if let Some(colour) = item.colour {
+        style = style.fg(colour);
+    }
+
+    style.paint(item.label.clone()).to_string()
 }
 
 #[cfg(test)]
@@ -79,20 +57,24 @@ mod tests {
 
     use style::*;
     use ansi_term::Style;
-    use fs;
 
     #[test]
-    fn it_paints_file_icons() {
-        let label = "LICENSE".to_string();
-        let dir_type = fs::DirType::File;
-        let f = File::new(label.clone(), dir_type, label.clone());
-        let painter = Painter::new(None);
-        let actual = painter.paint(f).unwrap();
-        assert_eq!(actual, "\u{1b}[1m🗋\u{1b}[0m LICENSE");
+    fn it_paints_colours() {
+        let licenseItem = PaintItem{
+            label: "LICENSE".to_string(),
+            is_bold: false,
+            is_underline: false,
+            is_dimmed: false,
+            is_hidden: false,
+            colour: Some(Colour::White),
+            icon: None
+        };
+
+        let actual = paint(&licenseItem);
+        assert_eq!(actual, "\u{1b}[1m\u{1F5CB}\u{1b}[0m \u{1b}[37mLICENSE\u{1b}[0m");
     }
 
-    #[test]
-    fn it_paints_directory_icons() {
+/*    fn it_paints_directory_icons() {
         let label = "scripts/".to_string();
         let dir_type = fs::DirType::Dir;
         let f = File::new(label.clone(), dir_type, label.clone());
@@ -100,4 +82,5 @@ mod tests {
         let actual = painter.paint(f).unwrap();
         assert_eq!(actual, "\u{1b}[1m📂\u{1b}[0m \u{1b}[37mscripts/\u{1b}[0m");
     }
+*/
 }

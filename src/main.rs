@@ -32,10 +32,10 @@ fn main() {
     let dir = dir_option.unwrap_or(DEFAULT_PATH);
 
     let configuration = config::find_config(dir);
-    let painter = style::Painter::new(configuration);
+//    let painter = style::Painter::new(configuration);
 
     let mut std_out_writer = stdout();
     let fs_reader = fs::FsReader;
-    let mut l = les::Les::new(dir, &mut std_out_writer, &fs_reader, &painter);
+    let mut l = les::Les::new(dir, &mut std_out_writer, &fs_reader/*, &painter*/);
     l.run();
 }
