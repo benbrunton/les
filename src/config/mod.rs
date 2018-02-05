@@ -2,13 +2,13 @@
 use std::path::PathBuf;
 
 mod config;
-pub use self::config::Config;
+pub use self::config::{Config, Store};
 
-pub fn find_config(target_path: &str) -> Option<config::Config> {
+pub fn find_config(target_path: &str) -> Config {
 
     let absolute_path = PathBuf::from(target_path).canonicalize();
     match absolute_path {
-        Err(_)  => return None,
+        Err(_)  => return Config::new(""),
         _       => ()
     }
 
@@ -19,12 +19,12 @@ pub fn find_config(target_path: &str) -> Option<config::Config> {
     }
 
     if !check_exists(&path) {
-        return None;
+        return Config::new("");
     }
 
     path.push(".les");
-    let c = config::Config::new(path.to_str().expect("unable to set path to string"));
-    Some(c)
+    let p = path.to_str().unwrap_or("");
+    Config::new(p)
 
 }
 

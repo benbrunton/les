@@ -11,6 +11,7 @@ mod les;
 mod fs;
 mod style;
 mod config;
+mod decorate;
 
 const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 const DEFAULT_PATH: &str = "./";
@@ -32,10 +33,12 @@ fn main() {
     let dir = dir_option.unwrap_or(DEFAULT_PATH);
 
     let configuration = config::find_config(dir);
-//    let painter = style::Painter::new(configuration);
+
+    let decorator = decorate::Decorate::new(Some(&configuration));
 
     let mut std_out_writer = stdout();
     let fs_reader = fs::FsReader;
-    let mut l = les::Les::new(dir, &mut std_out_writer, &fs_reader/*, &painter*/);
+    let mut l = les::Les::new(dir, &mut std_out_writer, &fs_reader, &decorator);
     l.run();
 }
+

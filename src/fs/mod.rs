@@ -25,14 +25,9 @@ impl FsReader{
         let stem_option = path.file_name();
         let stem = stem_option.unwrap();
         let label = format!("{}", stem.to_str().unwrap());
-        let dir_type = if meta.is_dir() {
-            DirType::Dir
-        } else {
-            DirType::File
-        };
 
         File::new(
-            label, dir_type, String::from(path.to_str().unwrap())
+            label, meta.is_dir(), String::from(path.to_str().unwrap())
         )
 
     }
@@ -83,29 +78,24 @@ impl DirReader for FsReader {
 
 }
 
-#[derive(Clone)]
-pub enum DirType {
-    File,
-    Dir
-}
 
 pub struct File {
     label: String,
-    dir_type: DirType,
+    is_dir: bool,
     path: String
 }
 
 impl File {
-    pub fn new(label: String, dir_type: DirType, path: String) -> File {
+    pub fn new(label: String, is_dir: bool, path: String) -> File {
         File {
             label,
-            dir_type,
+            is_dir,
             path
         }
     }
 
-    pub fn get_dir_type(&self) -> DirType {
-        self.dir_type.clone()
+    pub fn get_is_dir(&self) -> bool {
+        self.is_dir
     }
 
     pub fn get_label(&self) -> String {

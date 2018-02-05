@@ -1,25 +1,27 @@
 // les module
 use std::io::Write;
 use fs::DirReader;
+use decorate::Decorate;
+use style::paint;
 
 pub struct Les<'a, W: Write + 'a, R: DirReader + 'a> {
     pub writer: &'a mut W,
     pub dir_reader: &'a R,
     path: &'a str,
-//    painter: &'a Painter
+    decorator: &'a Decorate<'a>
 }
 
 
 impl<'a, W: Write + 'a, R: DirReader + 'a> Les<'a, W, R> {
 
     pub fn new(
-        path: &'a str, 
-        writer: &'a mut W, 
-        dir_reader: &'a R, 
- //       painter: &'a Painter
+        path: &'a str,
+        writer: &'a mut W,
+        dir_reader: &'a R,
+        decorator: &'a Decorate
     ) -> Les<'a, W, R> {
 
-        Les { writer, dir_reader, path/*, painter */ }
+        Les { writer, dir_reader, path, decorator }
     }
 
     pub fn run(&mut self){
@@ -29,10 +31,9 @@ impl<'a, W: Write + 'a, R: DirReader + 'a> Les<'a, W, R> {
             Ok(paths) => {
 
                 for path in paths {
-//                    let output = self.painter.paint(path);
-//                    if let Some(painted_path) = output {
-//                        let _ = writeln!(self.writer, "{}", painted_path);
-//                    }
+
+                    let paint_rules = self.decorator.get_paint_rules(&path);
+                    println!("{}", paint(&paint_rules));
                 }
             },
             _ => ()
@@ -47,15 +48,16 @@ mod tests {
     use les::*;
     use std;
     use fs;
+    use decorate;
 
     #[test]
     fn it_doesnt_error() {
 
         let fs_reader = fs::FsReader;
         let mut writer = Writer;
-        //let painter = Painter::new(None);
+        let decorator = decorate::Decorate::new(None);
 
-        let mut l = Les::new("./", &mut writer, &fs_reader/*, &painter*/);
+        let mut l = Les::new("./", &mut writer, &fs_reader, &decorator);
         l.run();
     }
 
@@ -66,5 +68,6 @@ mod tests {
         fn write(&mut self, _: &[u8]) -> Result<usize, std::io::Error>{ Ok(0) }
         fn flush(&mut self) -> Result<(), std::io::Error>{ Ok(()) }
     }
+
 
 }

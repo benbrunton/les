@@ -56,7 +56,6 @@ fn get_decorated_text(item: &PaintItem) -> String {
 mod tests {
 
     use style::*;
-    use ansi_term::Style;
 
     #[test]
     fn it_paints_colours() {
@@ -74,13 +73,21 @@ mod tests {
         assert_eq!(actual, "\u{1b}[1m\u{1F5CB}\u{1b}[0m \u{1b}[37mLICENSE\u{1b}[0m");
     }
 
-/*    fn it_paints_directory_icons() {
-        let label = "scripts/".to_string();
-        let dir_type = fs::DirType::Dir;
-        let f = File::new(label.clone(), dir_type, label.clone());
-        let painter = Painter::new(None);
-        let actual = painter.paint(f).unwrap();
-        assert_eq!(actual, "\u{1b}[1m📂\u{1b}[0m \u{1b}[37mscripts/\u{1b}[0m");
+    #[test]
+    fn it_paints_directory_icons() {
+        let licenseItem = PaintItem{
+            label: "scripts/".to_string(),
+            is_bold: false,
+            is_underline: false,
+            is_dimmed: false,
+            is_hidden: false,
+            colour: None,
+            icon: Some('\u{1F4C2}')
+        };
+
+        let actual = paint(&licenseItem);
+        assert_eq!(actual, "\u{1b}[1m\u{1F4C2}\u{1b}[0m scripts/");
+
     }
-*/
+
 }

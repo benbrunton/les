@@ -3,9 +3,12 @@ use std::io::prelude::*;
 use std::fs::File;
 use std::collections::BTreeMap;
 use std::string::String;
-use std::env;
 
 use toml;
+
+pub trait Store {
+    fn get(&self, key: &'static str) -> Option<&toml::Value>;
+}
 
 #[derive(Debug)]
 pub struct Config{
@@ -16,11 +19,18 @@ impl Config {
 
     pub fn new(path: &str) -> Config{
 
-        let mut f = File::open(path).expect("unable to open .les");
-        let mut s = String::new();
-        let _ = f.read_to_string(&mut s);
+        let mut f = File::open(path);
 
-        let toml = toml::from_str(&s).expect("unable to parse .les");
+        if let Err(_) = f {
+            return Config { store: BTreeMap::new() }; 
+        };
+
+        let mut file_string = f.unwrap();
+
+        let mut s = String::new();
+        let _ = file_string.read_to_string(&mut s);
+
+        let toml = toml::from_str(&s).unwrap_or(BTreeMap::new());
 
         Config {
             store : toml
@@ -28,19 +38,16 @@ impl Config {
 
     }
 
-    pub fn get(&self, key: &'static str) -> Option<&toml::Value> {
+}
+
+
+impl Store for Config {
+
+    fn get(&self, key: &'static str) -> Option<&toml::Value> {
 
         self.store.get(key)
-/*
-        match self.store.get(key){
-            Some(val) => {
-                let new_str = val.to_string();
-                let trimmed_str = new_str.trim_matches('"').to_string();
-                Some(val)
-            },
-            None => None
-        }
-*/
 
     }
+
 }
+
