@@ -1,11 +1,24 @@
 
-hidden = ["*.lock"]
+[hidden]
+    hidden = [".*"]
+    except = [".les", ".gitignore"]
 
-[color]
-    [color.grey]
-    files = ["*.css", "*.lock"]
+[colour]
+    [colour.green]
+        colour = ["LICENSE", "*.md"]
+
+    [colour.grey]
+        colour = [".gitignore", ".les", "*.lock"]
 
 [annotate]
     [annotate.config]
     files = ["*.toml", "*.yml", "*.json"]
     annotate = "configuration files"
+
+[dir]
+    [dir.colour]
+        [dir.colour.yellow]
+        colour = ["*"]
+
+    [dir.icon]
+

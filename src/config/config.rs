@@ -21,7 +21,8 @@ impl Config {
 
         let f = File::open(path);
 
-        if let Err(_) = f {
+        if let Err(err) = f {
+            println!("{:?}", err);
             return Config { store: BTreeMap::new() }; 
         };
 
