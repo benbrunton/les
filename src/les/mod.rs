@@ -2,27 +2,24 @@
 use std::io::Write;
 use fs::DirReader;
 use decorate::Decorate;
-use paintitems::PaintItems;
-use style::paint;
+use io::Print;
 
-pub struct Les<'a, W: Write + 'a, R: DirReader + 'a> {
-    pub writer: &'a mut W,
+pub struct Les<'a, P: Print + 'a, R: DirReader + 'a> {
+    pub printer: &'a P,
     pub dir_reader: &'a R,
-    path: &'a str,
-    decorator: &'a Decorate<'a>
+    path: &'a str
 }
 
 
-impl<'a, W: Write + 'a, R: DirReader + 'a> Les<'a, W, R> {
+impl<'a, P: Print + 'a, R: DirReader + 'a> Les<'a, P, R> {
 
     pub fn new(
         path: &'a str,
-        writer: &'a mut W,
-        dir_reader: &'a R,
-        decorator: &'a Decorate
-    ) -> Les<'a, W, R> {
+        printer: &'a P,
+        dir_reader: &'a R
+    ) -> Les<'a, P, R> {
 
-        Les { writer, dir_reader, path, decorator }
+        Les { printer, dir_reader, path }
     }
 
     pub fn run(&mut self){
@@ -30,17 +27,7 @@ impl<'a, W: Write + 'a, R: DirReader + 'a> Les<'a, W, R> {
 
         match paths_result {
             Ok(paths) => {
-                let mut painted_entries = Vec::new();
-                for path in paths {
-                    painted_entries.push(self.decorator.get_paint_rules(&path));
-                }
-
-                let paint_items = PaintItems::new(painted_entries);
-                let mut visible_items = paint_items.get_visible();
-
-                for item in visible_items.iter() {
-                    println!("{}", paint(&item));
-                }
+                self.printer.print(paths);
             },
             _ => ()
         }
@@ -55,24 +42,24 @@ mod tests {
     use std;
     use fs;
     use decorate;
+    use io;
 
     #[test]
     fn it_doesnt_error() {
 
         let fs_reader = fs::FsReader;
-        let mut writer = Writer;
+        let printer = Printer;
         let decorator = decorate::Decorate::new(None);
 
-        let mut l = Les::new("./", &mut writer, &fs_reader, &decorator);
+        let mut l = Les::new("./", &printer, &fs_reader);
         l.run();
     }
 
 
-    struct Writer;
+    struct Printer;
 
-    impl std::io::Write for Writer {
-        fn write(&mut self, _: &[u8]) -> Result<usize, std::io::Error>{ Ok(0) }
-        fn flush(&mut self) -> Result<(), std::io::Error>{ Ok(()) }
+    impl io::Print for Printer {
+        fn print(&self, _: Vec<fs::File>) { }
     }
 
 
