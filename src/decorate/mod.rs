@@ -5,6 +5,7 @@ use config::Store;
 use fs::File;
 use style::PaintItem;
 use ansi_term::Colour;
+use std::collections::BTreeMap;
 
 pub struct Decorate<'a>{
     config: Option<&'a Store>
@@ -28,7 +29,10 @@ impl <'a> Decorate<'a> {
 
 
         let is_hidden = self.is_hidden(&file.get_name());
-        let colour = self.get_colour(&file.get_name());
+        let colour = match file.get_is_dir() {
+            true => self.get_dir_colour(&file.get_name()),
+            _    => self.get_colour(&file.get_name())
+        };
 
         PaintItem{
             label,
@@ -62,6 +66,41 @@ impl <'a> Decorate<'a> {
             },
             _ => None
         }
+    }
+
+    fn get_dir_colour(&self, path: &str) -> Option<Colour> {
+
+        match self.get("dir") {
+            
+            Some(&toml::Value::Table(ref dir_table)) => {
+                match dir_table.get("colour") {
+                    Some(&toml::Value::Table(ref colour_table)) => self.search_colour_table(path, colour_table),
+                    _ => None
+
+                }
+
+            },
+            _ => None
+
+        }
+    }
+
+    fn search_colour_table(&self, path: &str, colour_table: &BTreeMap<String, toml::Value>) -> Option<Colour> {
+
+            for (key, colour) in colour_table {
+                let applied_colour = self.get_colour_from_key(key);
+
+                if self.matches_glob_array(colour.get("except"), path) {
+                    continue;
+                }
+
+                if self.matches_glob_array(colour.get("colour"), path) {
+                    return Some(applied_colour);
+                }
+            }
+
+            None
+
     }
 
     fn get_colour_from_key(&self, key: &str) -> Colour {

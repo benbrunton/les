@@ -1,24 +1,22 @@
 
 [hidden]
-    hidden = [".*"]
-    except = [".les", ".gitignore"]
+hidden = [".*"]
+except = [".les", ".gitignore"]
 
 [colour]
-    [colour.green]
-        colour = ["LICENSE", "*.md"]
+[colour.green]
+colour = ["LICENSE", "*.md"]
 
-    [colour.grey]
-        colour = [".gitignore", ".les", "*.lock"]
+[colour.grey]
+colour = [".gitignore", ".les", "*.lock"]
 
 [annotate]
-    [annotate.config]
-    files = ["*.toml", "*.yml", "*.json"]
-    annotate = "configuration files"
+[annotate.config]
+files = ["*.toml", "*.yml", "*.json"]
+annotate = "configuration files"
 
 [dir]
-    [dir.colour]
-        [dir.colour.yellow]
-        colour = ["*"]
-
-    [dir.icon]
+[dir.colour]
+[dir.colour.blue]
+colour = ["*"]
 
