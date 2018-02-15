@@ -172,8 +172,46 @@ impl <'a> Decorate<'a> {
 #[cfg(test)]
 mod tests {
 
+    use style::PaintItem;
+    use config::Store;
+    use fs::File;
     use decorate::*;
 
+
+    #[test]
+    fn it_returns_a_Paint_Item() {
+
+        let file = File::new(
+            String::from("filename"),
+            String::from("file_label"),
+            false,
+            String::from("/filename")
+        );
+        let decorator = Decorate::new(None);
+        let paint_item = decorator.get_paint_rules(&file);
+        let expected_result = PaintItem{
+            label: String::from("file_label"),
+            is_bold: false,
+            is_underline: false,
+            is_dimmed: false,
+            is_hidden: false,
+            colour: None,
+            icon: None
+        };
+
+
+        assert_eq!(paint_item, expected_result);
+    }
+
+/*    struct MockStore;
+
+    impl Store for MockStore {
+        fn get(&self, _: &'static str) -> Option<&toml::Value> {
+
+            None
+        }
+    }
+*/
 
 }
 

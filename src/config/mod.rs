@@ -8,7 +8,7 @@ pub fn find_config(target_path: &str) -> Config {
 
     let absolute_path = PathBuf::from(target_path).canonicalize();
     match absolute_path {
-        Err(_)  => return Config::new(""),
+        Err(_)  => return Config::from_path(""),
         _       => ()
     }
 
@@ -19,12 +19,12 @@ pub fn find_config(target_path: &str) -> Config {
     }
 
     if !check_exists(&path) {
-        return Config::new("");
+        return Config::from_path("");
     }
 
     path.push(".les");
     let p = path.to_str().unwrap_or("");
-    Config::new(p)
+    Config::from_path(p)
 
 }
 

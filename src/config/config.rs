@@ -17,7 +17,7 @@ pub struct Config{
 
 impl Config {
 
-    pub fn new(path: &str) -> Config{
+    pub fn from_path(path: &str) -> Config{
 
         let f = File::open(path);
 
@@ -29,6 +29,13 @@ impl Config {
 
         let mut s = String::new();
         let _ = file_string.read_to_string(&mut s);
+
+
+        Self::from_str(&s)
+        
+    }
+
+    pub fn from_str(s: &str) -> Config {
 
         let toml = toml::from_str(&s).unwrap_or(BTreeMap::new());
 
