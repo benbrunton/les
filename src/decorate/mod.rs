@@ -1,4 +1,3 @@
-
 use glob::Pattern;
 use toml;
 use config::Store;
@@ -173,9 +172,10 @@ impl <'a> Decorate<'a> {
 mod tests {
 
     use style::PaintItem;
-    use config::Store;
+    use config::Config;
     use fs::File;
     use decorate::*;
+    use ansi_term::Colour;
 
 
     #[test]
@@ -203,15 +203,38 @@ mod tests {
         assert_eq!(paint_item, expected_result);
     }
 
-/*    struct MockStore;
+    #[test]
+    fn it_can_decorate_based_on_filename() {
 
-    impl Store for MockStore {
-        fn get(&self, _: &'static str) -> Option<&toml::Value> {
+        let file = File::new(
+            String::from("filename"),
+            String::from("file_label"),
+            false,
+            String::from("/filename")
+        );
 
-            None
-        }
+        let config_string = "
+[colour]
+[colour.green]
+colour = [\"filename\"]
+";
+        let conf = Config::from_str(&config_string);
+        let decorator = Decorate::new(Some(&conf));
+        let paint_item = decorator.get_paint_rules(&file);
+        
+        let expected_result = PaintItem{
+            label: String::from("file_label"),
+            is_bold: false,
+            is_underline: false,
+            is_dimmed: false,
+            is_hidden: false,
+            colour: Some(Colour::Green),
+            icon: None
+        };
+
+        assert_eq!(paint_item, expected_result);
+
     }
-*/
 
 }
 

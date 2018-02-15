@@ -1,4 +1,3 @@
-
 use std::io::prelude::*;
 use std::fs::File;
 use std::collections::BTreeMap;
@@ -21,7 +20,7 @@ impl Config {
 
         let f = File::open(path);
 
-        if let Err(err) = f {
+        if let Err(_) = f {
             return Config { store: BTreeMap::new() }; 
         };
 
