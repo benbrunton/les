@@ -15,8 +15,23 @@ colour = [".gitignore", ".les", "*.lock"]
 files = ["*.toml", "*.yml", "*.json"]
 annotate = "configuration files"
 
+[icon]
+[icon.page]
+files = ["LICENSE", "*.md"]
+icon = "📄"
+
+[icon.lock]
+files = ["*.lock"]
+icon = "🔒"
+
+
 [dir]
 [dir.colour]
 [dir.colour.blue]
 colour = ["*"]
+
+[dir.icon]
+[dir.icon.dirs]
+files = ["*"]
+icon = '📂'
 
