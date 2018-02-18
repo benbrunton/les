@@ -12,6 +12,7 @@ mod fs;
 mod style;
 mod config;
 mod decorate;
+mod paintitems;
 
 const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 const DEFAULT_PATH: &str = "./";
