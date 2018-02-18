@@ -2,6 +2,7 @@
 use std::io::Write;
 use fs::DirReader;
 use decorate::Decorate;
+use paintitems::PaintItems;
 use style::paint;
 
 pub struct Les<'a, W: Write + 'a, R: DirReader + 'a> {
@@ -29,13 +30,16 @@ impl<'a, W: Write + 'a, R: DirReader + 'a> Les<'a, W, R> {
 
         match paths_result {
             Ok(paths) => {
-
+                let mut painted_entries = Vec::new();
                 for path in paths {
+                    painted_entries.push(self.decorator.get_paint_rules(&path));
+                }
 
-                    let paint_rules = self.decorator.get_paint_rules(&path);
-                    if !paint_rules.is_hidden {
-                        println!("{}", paint(&paint_rules));
-                    }
+                let paint_items = PaintItems::new(painted_entries);
+                let mut visible_items = paint_items.get_visible();
+
+                for item in visible_items.iter() {
+                    println!("{}", paint(&item));
                 }
             },
             _ => ()
