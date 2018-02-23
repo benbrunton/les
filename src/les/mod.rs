@@ -2,12 +2,13 @@
 use std::io::Write;
 use fs::DirReader;
 use decorate::Decorate;
+use paintitems::PaintItems;
 use io::Print;
 
 pub struct Les<'a, P: Print + 'a, R: DirReader + 'a> {
     pub printer: &'a P,
     pub dir_reader: &'a R,
-    path: &'a str
+    path: &'a str,
 }
 
 

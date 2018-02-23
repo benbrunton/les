@@ -21,8 +21,12 @@ impl PaintItems {
         self.items.len()
     }
 
-    pub fn get(&self, index: usize) -> &PaintItem {
-        &self.items[index]
+    pub fn get(&self, index: usize) -> Option<&PaintItem> {
+        if index >= self.items.len() || index < 0 {
+            None
+        } else {
+            Some(&self.items[index])
+        }
     }
 
     pub fn get_visible(&self) -> PaintItems {
