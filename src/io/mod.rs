@@ -1,10 +1,13 @@
 use std::io::{Stdout,stdout};
-use std::cmp::min;
+use std::cmp::{min,max};
 use terminal_size::{Width, terminal_size};
 use style::paint;
 use decorate::Decorate;
 use fs::File;
 use paintitems::PaintItems;
+
+// Leading and trailing spaces plus icon
+const DEFAULT_INDENTATION: usize = 3;
 
 pub trait Print {
     fn print(&self, paths: Vec<File>);
@@ -22,97 +25,88 @@ impl<'a> TerminalPrinter<'a> {
     fn calculate_columns(&self, inodes: &PaintItems) -> usize {
         let inodes_count = inodes.len();
         let terminal_size = terminal_size();
-        if let Some((Width(w), _)) = terminal_size {
-            let max_term_cols = (w as f32 / inodes.get_longest_filename_size() as f32).round() as usize;
-            println!("max_term_cols: {}", max_term_cols);
-            max_term_cols
-            //if inodes_count < max_term_cols {
-            //    return 1;
-            //} else {
-            //    return max_term_cols;
-            //}
+        let max_filename_size = inodes.get_longest_filename_size();
+
+        if let Some((Width(width), _)) = terminal_size {
+            // Calculate how many columns would be rendered if we printed all columns back to back
+            let max_term_cols_no_spacing = (width as f32 / max_filename_size as f32).floor() as usize;
+            // Calculate the actual terminal width available after subtracting all the spacing
+            // between columns
+            let width_with_spaces = width as usize - (max_term_cols_no_spacing * DEFAULT_INDENTATION) - 1;
+
+            max((width_with_spaces as f32 / max_filename_size as f32).floor() as usize, 1)
         } else {
             1
         }
     }
 
-    // get the list of all inodes and the max columns
     fn print_rows(&self, items: &PaintItems, max_cols: usize) {
-        // divide total inodes by max cols and that's your `rows_per_col`
         let num_inodes = items.len();
         let mut rows_per_col = if num_inodes < max_cols {
             1
         } else {
-            ((num_inodes / max_cols) as f32).round() as usize
+            ((num_inodes / max_cols) as f32).floor() as usize
         };
-        if num_inodes % max_cols != 0 {
-            //rows_per_col = rows_per_col + 1;
-        }
-        println!("{}", num_inodes);
-        println!("{}", max_cols);
-        println!("{}", rows_per_col);
 
-        // iterate through the array of inodes in steps of `rows_per_col`
-        // on each iteration print indent() + paint(path). when your current
-        // path index > items print "\n" and proceed to the next row
-        //let max_name_length = items.get_longest_filename_size();
+        if num_inodes % max_cols != 0 {
+            rows_per_col = rows_per_col + 1;
+        }
 
         if rows_per_col == 1 {
             let mut indentation = 0;
             for item in items.iter() {
-                self.print_inode_str(paint(item), indentation);
-                indentation = 3;
+                self.indent(indentation);
+                self.print_inode_str(paint(item));
+                indentation = DEFAULT_INDENTATION;
             }
         } else {
-            // TODO -- Put in separate function
-            let max_column_width = self.get_column_width(&items);
-            for row_num in 0..rows_per_col {
-                let mut current_file_idx = row_num;
-                let mut indentation = 0;
-                let mut prev_item_length = 0;
-                loop {
-                    let item = items.get(current_file_idx);
-                    match item {
-                        Some(ref it) => {
-                            self.print_inode_str(paint(it), indentation);
-
-                            prev_item_length = it.label.len();
-                            indentation = self.get_item_indentation(prev_item_length, max_column_width);
-                            //println!("Position: {}", indentation);
-                            current_file_idx = current_file_idx + rows_per_col;
-                            //println!("Current File Index: {}", current_file_idx);
-                        },
-                        None => break
-                    }
-                }
-
-                print!("\n");
-            }
+            self.print_table(&items, max_cols, rows_per_col);
         }
-
-        println!('\n');
     }
 
+    fn print_table(&self, items: &PaintItems, max_cols: usize, max_rows: usize) {
+        let max_column_width = self.get_column_width(&items);
+        for row_num in 0..max_rows {
+            let mut current_file_idx = row_num;
+            let mut indentation = 0;
+            let mut prev_item_length = 0;
+
+            for _ in 0..max_cols {
+                let item = items.get(current_file_idx);
+                match item {
+                    Some(ref it) => {
+                        self.indent(indentation);
+                        self.print_inode_str(paint(it));
+
+                        prev_item_length = it.label.len();
+                        indentation = self.get_item_indentation(prev_item_length, max_column_width);
+                        current_file_idx = current_file_idx + max_rows;
+                    },
+                    None => break
+                }
+            }
+
+            print!("\n");
+        }
+    }
+
+    // TODO -- Detect if item is going to be rendered with an icon and adjust indentation
+    // accordingly.
     fn get_item_indentation(&self, prev_item_length: usize, column_width: usize) -> usize {
         column_width - prev_item_length - 2
     }
 
     fn get_column_width(&self, items: &PaintItems) -> usize {
-        // need to retrieve the highest filename size. That +3 spaces will become your column width
-        // then you determine how much to indent based on a subtraction of the previous item from 
-        // the max column width.
-        items.get_longest_filename_size() + 3
+        items.get_longest_filename_size() + DEFAULT_INDENTATION
     }
 
-    fn print_inode_str(&self, inode: String, indentation: usize) {
-        let spacing = " ".repeat(indentation);
-        print!("{}{}", spacing, inode);
+    fn print_inode_str(&self, inode: String) {
+        print!("{}", inode);
     }
 
-    //fn indent() {
-    //        let _ = writeln(self.writer, "{}", self.painter.paint(path));
-
-    //}
+    fn indent(&self, indentation: usize) {
+        print!("{}", " ".repeat(indentation));
+    }
 }
 
 impl<'a> Print for TerminalPrinter<'a> {
@@ -123,6 +117,9 @@ impl<'a> Print for TerminalPrinter<'a> {
         }
         let paint_items = PaintItems::new(painted_entries);
         let mut visible_items = paint_items.get_visible();
-        self.print_rows(&visible_items, self.calculate_columns(&visible_items));
+        // TODO -- Replace this line with the line below when table displays
+        // can be toggled via program flags.
+        self.print_rows(&visible_items, 1);
+        //self.print_rows(&visible_items, self.calculate_columns(&visible_items));
     }
 }
