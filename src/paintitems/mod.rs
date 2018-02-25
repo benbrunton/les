@@ -100,7 +100,14 @@ mod tests {
         });
 
         let items = PaintItems::new(items);
+        match items.get(0) {
+            Some(ref i) => {
+                assert_eq!(i.label, "LICENSE");
+            },
+            None => {
+                panic!("Failed to retrieve item from item list");
+            }
+        };
         assert_eq!(items.get_visible().len(), 1);
-        assert_eq!(items.get(0).label, "LICENSE");
     }
 }
