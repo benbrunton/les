@@ -21,7 +21,7 @@ files = ["LICENSE", "*.md"]
 icon = "📄"
 
 [icon.lock]
-files = ["*.lock"]
+files = ["*.lock", "*-lock.*"]
 icon = "🔒"
 
 
