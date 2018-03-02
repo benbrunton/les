@@ -1,6 +1,7 @@
 
 extern crate clap; 
 extern crate ansi_term;
+extern crate terminal_size;
 extern crate toml;
 extern crate glob;
 
@@ -10,6 +11,7 @@ use clap::{App, Arg};
 mod les;
 mod fs;
 mod style;
+mod io;
 mod config;
 mod decorate;
 mod paintitems;
@@ -37,9 +39,8 @@ fn main() {
 
     let decorator = decorate::Decorate::new(Some(&configuration));
 
-    let mut std_out_writer = stdout();
     let fs_reader = fs::FsReader;
-    let mut l = les::Les::new(dir, &mut std_out_writer, &fs_reader, &decorator);
+    let printer = io::TerminalPrinter::new(&decorator);
+    let mut l = les::Les::new(dir, &printer, &fs_reader);
     l.run();
 }
-
