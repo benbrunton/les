@@ -1,7 +1,7 @@
 
 use ansi_term::{Colour, Style};
 
-const ICON_UNKNOWN: char = '\u{1F5CB}';
+const ICON_UNKNOWN: char = '\u{2002}';
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct PaintItem{
@@ -17,7 +17,10 @@ pub struct PaintItem{
 pub fn paint(item: &PaintItem) -> String {
 
     let label = get_decorated_text(item);
-    let icon = item.icon.unwrap_or(ICON_UNKNOWN).to_string();
+    let icon = match item.icon {
+        Some(i) => i.to_string(),
+        __      => format!("{} ", ICON_UNKNOWN)
+    };
 
     return format!(
         "{} {}",

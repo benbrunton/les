@@ -19,6 +19,7 @@ mod paintitems;
 const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 const DEFAULT_PATH: &str = "./";
 const ARGS_FILEPATH: &str = "file";
+const ARGS_LIST_MODE: &str = "list";
 
 fn main() {
 
@@ -30,7 +31,7 @@ fn main() {
                 .index(1)
             )
         .arg(
-            Arg::with_name("list")
+            Arg::with_name(ARGS_LIST_MODE)
                 .help("force dir to be displayed as list")
                 .short("l")
             )
@@ -39,8 +40,7 @@ fn main() {
 
     let dir_option = matches.value_of(ARGS_FILEPATH);
     let dir = dir_option.unwrap_or(DEFAULT_PATH);
-
-    let list_option = matches.is_present("list");
+    let list_option = matches.is_present(ARGS_LIST_MODE);
 
     let configuration = config::find_config(dir);
 
