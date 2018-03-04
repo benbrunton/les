@@ -75,7 +75,7 @@ mod tests {
         };
 
         let actual = paint(&licenseItem);
-        assert_eq!(actual, "\u{1b}[1m\u{1F5CB}\u{1b}[0m \u{1b}[37mLICENSE\u{1b}[0m");
+        assert_eq!(actual, "\u{1b}[1m\u{2002} \u{1b}[0m \u{1b}[37mLICENSE\u{1b}[0m");
     }
 
     #[test]
