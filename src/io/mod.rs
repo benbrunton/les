@@ -14,12 +14,13 @@ pub trait Print {
 }
 
 pub struct TerminalPrinter<'a> {
-    decorator: &'a Decorate<'a>
+    decorator: &'a Decorate<'a>,
+    list_display: bool
 }
 
 impl<'a> TerminalPrinter<'a> {
-    pub fn new(decorator: &'a Decorate) -> TerminalPrinter<'a> {
-        TerminalPrinter { decorator }
+    pub fn new(decorator: &'a Decorate, list_display: bool) -> TerminalPrinter<'a> {
+        TerminalPrinter { decorator, list_display }
     }
 
     fn calculate_columns(&self, inodes: &PaintItems) -> usize {
@@ -117,9 +118,10 @@ impl<'a> Print for TerminalPrinter<'a> {
         }
         let paint_items = PaintItems::new(painted_entries);
         let mut visible_items = paint_items.get_visible();
-        // TODO -- Replace this line with the line below when table displays
-        // can be toggled via program flags.
-        self.print_rows(&visible_items, 1);
-        //self.print_rows(&visible_items, self.calculate_columns(&visible_items));
+        if self.list_display {
+            self.print_rows(&visible_items, 1);
+        } else {
+            self.print_rows(&visible_items, self.calculate_columns(&visible_items));
+        }
     }
 }

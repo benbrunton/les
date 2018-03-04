@@ -29,18 +29,25 @@ fn main() {
                 .help("file or dir to list")
                 .index(1)
             )
+        .arg(
+            Arg::with_name("list")
+                .help("force dir to be displayed as list")
+                .short("l")
+            )
         .get_matches();
 
 
     let dir_option = matches.value_of(ARGS_FILEPATH);
     let dir = dir_option.unwrap_or(DEFAULT_PATH);
 
+    let list_option = matches.is_present("list");
+
     let configuration = config::find_config(dir);
 
     let decorator = decorate::Decorate::new(Some(&configuration));
 
     let fs_reader = fs::FsReader;
-    let printer = io::TerminalPrinter::new(&decorator);
+    let printer = io::TerminalPrinter::new(&decorator, list_option);
     let mut l = les::Les::new(dir, &printer, &fs_reader);
     l.run();
 }
